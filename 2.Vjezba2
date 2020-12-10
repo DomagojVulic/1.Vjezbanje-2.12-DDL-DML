@@ -1,3 +1,5 @@
+# ukupno 35 min, 8 i pol minuta tablica i vanjski kljucevi, 26 i pol minuta 6 zadataka
+
 drop database if exists vjezba2;
 
 create database vjezba2;
@@ -55,3 +57,71 @@ asocijalno bit not null
 	ogrlica int not null,
 	asocijalno bit not null,
 	neprijatelj int not null);
+	
+	alter table brat add foreign key (neprijatelj) references neprijatelj(sifra);
+alter table neprijatelj add foreign key (cura) references cura(sifra);
+alter table cura add foreign key (decko) references decko(sifra);
+alter table decko_zarucnica add foreign key (decko) references decko(sifra);
+alter table decko_zarucnica add foreign key (zarucnica) references zarucnica(sifra);
+	alter table prijatelj add foreign key (svekar) references svekar(sifra);
+
+#zadatak 1 - unesi 3 retka u neprijatelj, cura i decko_zarucnica
+select * from neprijatelj;
+select * from zarucnica;
+insert into zarucnica values (1,234,'plava',2424,473,1),(2,32444,'plava',24234,4343,1),(3,24434,'plava',242,53,1);
+select * from decko;
+insert into decko values (1,1,'zuta',0),(2,1,'zuta',1),(3,1,'zuta',0);
+select * from decko_zarucnica; 
+insert into decko_zarucnica values (1,1,1),(2,2,2),(3,3,3);
+select * from cura;
+insert into cura values (1,'roza','1986-03-06','crvena',2344,1,'bijela',1),(2,'roza','1996-03-06','crvena',2344,1,'bijela',2),
+(3,'roza','1866-03-06','crvena',2344,0,'bijela',3);
+select * from neprijatelj;
+insert into neprijatelj values (1,'zelena','plava',245.96,'RayBan',26,'HR124558563',1),
+(2,'zelena','plava',245.96,'RayBan',26,'HR121658563',2),(3,'zelena','plava',245.96,'RayBan',26,'HR129898563',3);
+
+#zadatak 2 u prijatelj svima kolonu treciputa postavit na 30.travnja 2020
+select * from prijatelj;
+
+select * from svekar;
+insert into svekar values (1,'fudbalerka',32,1),(2,'fudbalerka',342,1),(3,'fudbalerka',3224,0);
+insert into prijatelj values (1,'RayBan','1956-12-25',1,'1854-02-03',1),(2,'RayBan','1956-12-25',1,'1854-08-03',2),(3,'RayBan','1956-12-25',1,'1854-02-03',3);
+update prijatelj set treciputa='2020-04-30'; # nisam uopce trebo radit UPDATE nego odma na insertu POSTAVITI tu vrijednost
+
+# 3 u tablici brat obrisat sve zapise cija je vrijednost ogrlica razlicita od 14
+select * from brat;
+insert into brat values (1,'zuta',14,1,1),(2,'plava',28,0,2),(3,'bijela',14,0,3);
+delete from brat where ogrlica!=14;
+
+#zadatak 4 Izlistajte suknja iz tablice cura uz uvjet da vrijednost kolone
+#drugiputa nepoznate.
+select * from cura;
+select suknja from cura where drugiputa is null;
+
+
+#5. Prikažite novcica iz tablice zarucnica, neprijatelj iz tablice brat te
+#haljina iz tablice neprijatelj uz uvjet da su vrijednosti kolone
+#drugiputa iz tablice cura poznate te da su vrijednosti kolone vesta iz
+#tablice decko sadrže niz znakova ba. Podatke posložite po haljina iz
+#tablice neprijatelj silazno.
+select * from zarucnica;
+select * from brat;
+
+select  f.novcica,a.neprijatelj, b.haljina
+from brat a
+inner join neprijatelj b on a.neprijatelj=b.sifra 
+inner join cura c on b.cura=c.sifra 
+inner join decko d on c.decko=d.sifra 
+inner join decko_zarucnica e on d.sifra=e.decko 
+inner join zarucnica f on e.zarucnica=f.sifra 
+where c.drugiputa is not null and d.vesta like '%ba%' 
+order by b.haljina desc; # ili order by 3 jer je b.haljinca treća kolona
+
+
+
+#6 Prikažite kolone vesta i asocijalno iz tablice decko čiji se primarni
+#ključ ne nalaze u tablici decko_zarucnica.
+select a.vesta,a.asocijalno 
+from decko a
+inner join decko_zarucnica b on a.sifra=b.decko
+where a.sifra!=b.decko;
